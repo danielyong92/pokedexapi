@@ -14,6 +14,12 @@ let pokemonData;
 let frontPokemonImage;
 let backPokemonImage;
 let currentPokemonImage;
+const savedPokemon = localStorage.getItem("pokemonData")
+  ? JSON.parse(localStorage.getItem("pokemonData"))
+  : null;
+const inputSearch = localStorage.getItem("inputSearch")
+  ? localStorage.getItem("inputSearch")
+  : null;
 
 let pokemon;
 const pokemonSearch = async term => {
@@ -21,11 +27,12 @@ const pokemonSearch = async term => {
   const response = await fetch(url);
 
   pokemon = await response.json();
-  pokemonData = pokemon;
+  localStorage.setItem("pokemonData", JSON.stringify(pokemon));
+  localStorage.setItem("inputSearch", term);
+
   frontPokemonImage = pokemon.sprites.front_default;
   backPokemonImage = pokemon.sprites.back_default;
   currentPokemonImage = frontPokemonImage;
-  console.log("pokemon", pokemon);
 
   // document.getElementById('update_image').setAttribute('src', pokemon.sprites.other.dream_world.front_default);
   saveButton.style.display = "block";
@@ -34,11 +41,10 @@ const pokemonSearch = async term => {
   document
     .getElementById("update_image")
     .setAttribute("src", currentPokemonImage);
-  document.getElementById("pokemon-name").innerHTML = `Name: ${pokemon.name}`;
+  pokemonName.innerHTML = `Name: ${pokemon.name}`;
   pokemonHeight.innerHTML = pokemon.height;
   pokemonWeight.innerHTML = pokemon.weight;
   pokemonOrder.innerHTML = pokemon.order;
-
   let array = pokemon.types;
   array.forEach(x => {
     pokemonType.innerHTML = x.type.name;
@@ -75,14 +81,7 @@ const pokemonSearch = async term => {
 //     });
 // }
 
-const appendPokemon = pokemon => {
-  let carouselDiv = document.getElementById("carousel");
-  let images = document.createElement("img");
-  images.setAttribute("src", pokemon.sprites.front_default);
-  images.setAttribute("height", 150);
-  images.setAttribute("width", 150);
-  carouselDiv.appendChild(images);
-
+const imageOnClick = images => {
   images.onclick = () => {
     document
       .getElementById("update_image")
@@ -99,6 +98,17 @@ const appendPokemon = pokemon => {
       pokemonType.innerHTML = x.type.name;
     });
   };
+};
+
+const appendPokemon = pokemon => {
+  let carouselDiv = document.getElementById("carousel");
+  let images = document.createElement("img");
+  images.setAttribute("src", pokemon.sprites.front_default);
+  images.setAttribute("height", 150);
+  images.setAttribute("width", 150);
+  carouselDiv.appendChild(images);
+
+  imageOnClick(images);
 };
 
 // const flipPokemon = pokemonData => {
@@ -118,3 +128,34 @@ const appendPokemon = pokemon => {
 searchButton.addEventListener("click", () => pokemonSearch(pokemonName.value));
 saveButton.addEventListener("click", () => appendPokemon(pokemon));
 // pokemonImage.addEventListener("click", () => flipPokemon(pokemonData));
+
+if (savedPokemon && inputSearch) {
+  //this is to populate the search with session value
+  pokemonName.value = inputSearch;
+
+  let carouselDiv = document.getElementById("carousel");
+  let images = document.createElement("img");
+  images.setAttribute("src", savedPokemon.sprites.front_default);
+  images.setAttribute("height", 150);
+  images.setAttribute("width", 150);
+  carouselDiv.appendChild(images);
+
+  images.onclick = () => {
+    document
+      .getElementById("update_image")
+      .setAttribute("src", savedPokemon.sprites.front_default);
+    frontPokemonImage = savedPokemon.sprites.front_default;
+    backPokemonImage = savedPokemon.sprites.back_default;
+    currentPokemonImage = frontPokemonImage;
+    document.getElementById("pokemon-name").innerHTML = `Name: ${pokemon.name}`;
+    pokemonHeight.innerHTML = pokemon.height;
+    pokemonWeight.innerHTML = pokemon.weight;
+    pokemonOrder.innerHTML = pokemon.order;
+    let array = savedPokemon.types;
+    array.forEach(x => {
+      pokemonType.innerHTML = x.type.name;
+    });
+  };
+
+//   saveButton.onclick = () => storePokemon(savedData);
+}
