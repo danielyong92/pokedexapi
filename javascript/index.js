@@ -18,7 +18,7 @@ const pokemonSearch = async term => {
 
   const pokemon = await response.json();
   pokemonData = pokemon;
-  console.log("pokemon", pokemon);
+//   console.log("pokemon", pokemon);
 
   // document.getElementById('update_image').setAttribute('src', pokemon.sprites.other.dream_world.front_default);
   saveButton.style.display = "block";
@@ -34,15 +34,15 @@ const pokemonSearch = async term => {
 
   let array = pokemon.types
   array.forEach( x => {
-      console.log("name", x.type.name);
       pokemonType.innerHTML += `${x.type.name} `});
-  
 };
 
 const appendPokemon = pokemonData => {
   let carouselDiv = document.getElementById("carousel");
   let images = document.createElement("img");
-  images.setAttribute("src", pokemonData);
+  images.setAttribute("src", pokemonData.sprites.front_default);
+  images.setAttribute("height", 150);
+  images.setAttribute("width", 150);
   carouselDiv.appendChild(images);
 };
 
@@ -62,6 +62,6 @@ const flipPokemon = pokemonData => {
 
 searchButton.addEventListener("click", () => pokemonSearch(pokemonName.value));
 saveButton.addEventListener("click", () =>
-  appendPokemon(pokemonData.sprites.front_default)
+  appendPokemon(pokemonData)
 );
 pokemonImage.addEventListener("click", () => flipPokemon(pokemonData));

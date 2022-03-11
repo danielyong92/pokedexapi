@@ -19,6 +19,7 @@
     width:200px;
     height:200px;
 }
+
 .pokemon-details {
     display:flex;
     flex-direction: column;
